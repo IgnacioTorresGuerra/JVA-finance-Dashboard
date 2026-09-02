@@ -1,0 +1,234 @@
+table '_Medidas Ventas'
+	lineageTag: 41ab162e-de98-4731-9b6c-2ab332c154e1
+
+	measure 'Ventas Totales' = SUM(Fact_Facturas[Total])
+		formatString: $#,##0
+		displayFolder: Ventas
+		lineageTag: 80b70eca-12fd-4517-b9cf-9537b0081acd
+
+	measure 'Cantidad Vendida' = COUNTROWS(Fact_Facturas)
+		formatString: #,##0
+		displayFolder: Ventas Cliente
+		lineageTag: da25d669-4b87-49f4-b796-c348895e7c44
+
+	measure 'Ventas Periodo Anterior' =
+			VAR FechaInicio = DATE(MIN(Fact_Facturas[Anio_Emision]), MIN(Fact_Facturas[Mes_Emision]), 1)
+			VAR FechaFin = EOMONTH(DATE(MAX(Fact_Facturas[Anio_Emision]), MAX(Fact_Facturas[Mes_Emision]), 1), 0)
+			VAR FechaInicioAnterior = EDATE(FechaInicio, -12)
+			VAR FechaFinAnterior = EDATE(FechaFin, -12)
+			RETURN
+			CALCULATE([Ventas Totales], FILTER(ALL(Fact_Facturas), Fact_Facturas[Fecha_Emision] >= FechaInicioAnterior && Fact_Facturas[Fecha_Emision] <= FechaFinAnterior))
+		formatString: $#,##0
+		displayFolder: Ventas
+		lineageTag: c8751af6-9dd1-446a-817c-6017c1260d3d
+
+	measure 'Ventas acumuladas' = CALCULATE([Ventas Totales], FILTER(ALL(Fact_Facturas), Fact_Facturas[Anio_Emision] = MAX(Fact_Facturas[Anio_Emision]) && Fact_Facturas[Fecha_Emision] <= MAX(Fact_Facturas[Fecha_Emision])))
+		formatString: $#,##0
+		displayFolder: Ventas
+		lineageTag: ef839eb1-a1a2-4b58-959a-c937941d04de
+
+	measure 'Ticket promedio' = DIVIDE(SUM(Fact_Facturas[Total]), [Cantidad Vendida])
+		formatString: $#,##0
+		displayFolder: Ventas Cliente
+		lineageTag: fd636de9-a81b-4030-843f-b1475cb35897
+
+	measure 'Participacion Cliente' = DIVIDE(COUNTROWS(Fact_Facturas), CALCULATE(COUNTROWS(Fact_Facturas), ALL(Dim_Clientes)))
+		formatString: 0.0%
+		displayFolder: Ventas Cliente
+		lineageTag: 34e475bb-09fa-4f4e-b325-51aeecbc8f13
+
+	measure 'Participacion Ventas' = DIVIDE(SUM(Fact_Facturas[Total]), CALCULATE(SUM(Fact_Facturas[Total]), ALL(Dim_Clientes)))
+		formatString: 0.0%
+		displayFolder: Ventas Cliente
+		lineageTag: f078e5d7-4257-4418-a9fb-d5c73ff8523e
+
+	measure 'Ranking Cliente' = RANKX(ALL(Dim_Clientes), CALCULATE(SUM(Fact_Facturas[Total])), , DESC)
+		formatString: 0
+		displayFolder: Ventas Cliente
+		lineageTag: 2391a2b6-180c-47e7-be48-a103719b7baf
+
+	measure 'Variacion ventas' = [Ventas Totales] - [Ventas Periodo Anterior]
+		formatString: $#,##0
+		displayFolder: Ventas Mensual
+		lineageTag: 06ead1c1-efbc-4156-bdda-d5abe14ed818
+
+	measure 'Variacion %' = DIVIDE([Variacion ventas], [Ventas Periodo Anterior])
+		formatString: 0.0%
+		displayFolder: Ventas Mensual
+		lineageTag: 4c3740f8-99d6-4281-bb2a-3e08a94e9d08
+
+	measure 'Resumen Ejecutivo' =
+			VAR _ventas = [Ventas Totales (Mes Actual)]
+			VAR _var = [Variacion % (Mes Actual)]
+			VAR _moros = [% Morosidad (Mes Actual)]
+			VAR _riesgo = [Monto en Riesgo (Mes Actual)]
+			VAR _alertaMorosidad = _moros > 0.10 && _riesgo > 0
+			VAR _alertaVentas = _var < 0
+			VAR _mensaje =
+			    SWITCH(
+			        TRUE(),
+			        _alertaMorosidad,
+			            "⚠ Morosidad crítica: " & FORMAT(_moros, "0.0%") & " de las facturas vencidas, $" & FORMAT(_riesgo, "#,##0") & " en riesgo de cartera — priorizar cobranza esta semana",
+			        _alertaVentas,
+			            "⚠ Ventas cayeron " & FORMAT(_var, "0.0%;-0.0%") & " vs. mismo mes año anterior — revisar pipeline comercial",
+			        "✓ Ventas al alza (" & FORMAT(_var, "+0.0%;-0.0%") & " vs. mismo mes año anterior), cartera sana (" & FORMAT(_moros, "0.0%") & " morosidad) — mantener el ritmo"
+			    )
+			RETURN _mensaje
+		displayFolder: Resumen
+		lineageTag: af42ef4b-6be2-4688-a856-9846a395fab9
+
+	measure 'Última Actualización' = "Actualizado: " & FORMAT(MAX(RefreshDate[RefreshDate]), "dd-mm-yyyy HH:mm")
+		displayFolder: Resumen
+		lineageTag: 6ca38428-401c-4d73-94cd-35fe5776059b
+
+	measure 'Filtros Aplicados' = VAR vAno = IF(HASONEVALUE('LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5'[Año]), SELECTEDVALUE('LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5'[Año]), "Todos") VAR vMes = IF(HASONEVALUE('LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5'[Mes]), SELECTEDVALUE('LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5'[Mes]), "Todos") VAR vCliente = IF(HASONEVALUE(Dim_Clientes[Nombre_Cliente]), SELECTEDVALUE(Dim_Clientes[Nombre_Cliente]), "Todos") RETURN "Año: " & vAno & "   |   Mes: " & vMes & "   |   Cliente: " & vCliente
+		displayFolder: Resumen
+		lineageTag: 065cadad-f1ab-43f3-bbdb-39fcecc733c9
+
+	measure 'Resumen Ejecutivo Color' =
+			VAR _moros = [% Morosidad (Mes Actual)]
+			VAR _riesgo = [Monto en Riesgo (Mes Actual)]
+			VAR _var = [Variacion % (Mes Actual)]
+			VAR _alertaMorosidad = _moros > 0.10 && _riesgo > 0
+			VAR _alertaVentas = _var < 0
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        _alertaMorosidad, "#D13438",
+			        _alertaVentas, "#D97706",
+			        "#107C10"
+			    )
+		isHidden
+		displayFolder: Resumen
+		lineageTag: 82da56cc-5b1a-44a8-8b21-bdd360977cf5
+
+	measure 'Participacion Top3 Clientes' =
+			VAR Top3Total =
+			    SUMX(
+			        TOPN(3, ALL(Dim_Clientes), CALCULATE([Ventas Totales]), DESC),
+			        CALCULATE([Ventas Totales])
+			    )
+			VAR TotalGeneral = CALCULATE([Ventas Totales], ALL(Dim_Clientes))
+			RETURN DIVIDE(Top3Total, TotalGeneral)
+		formatString: 0.0%
+		displayFolder: Ventas Cliente
+		lineageTag: 0b0d6711-967d-49f8-b334-bbae2df82d7e
+
+	measure 'Participacion Acumulada' =
+			VAR RankActual = [Ranking Cliente]
+			VAR VentasAcumuladas =
+			    SUMX(
+			        FILTER(ALL(Dim_Clientes), [Ranking Cliente] <= RankActual),
+			        CALCULATE([Ventas Totales])
+			    )
+			VAR VentasTotalGeneral = CALCULATE([Ventas Totales], ALL(Dim_Clientes))
+			RETURN DIVIDE(VentasAcumuladas, VentasTotalGeneral)
+		formatString: 0.0%
+		displayFolder: Ventas Cliente
+		lineageTag: 86eba905-bade-436a-b4c4-8cde16f56269
+
+	measure 'Ventas Totales (Mes Actual)' =
+			VAR AnioActual = YEAR(TODAY())
+			VAR MesActual = MONTH(TODAY())
+			RETURN
+			CALCULATE(
+			    SUM(Fact_Facturas[Total]),
+			    REMOVEFILTERS(Fact_Facturas),
+			    Fact_Facturas[Anio_Emision] = AnioActual,
+			    Fact_Facturas[Mes_Emision] = MesActual
+			)
+		formatString: $#,##0
+		displayFolder: Resumen
+		lineageTag: c3e07690-69cf-4d75-9382-4f48405a0654
+
+	measure 'Variacion % (Mes Actual)' =
+			VAR AnioActual = YEAR(TODAY())
+			VAR MesActual = MONTH(TODAY())
+			VAR VentasMesActual =
+			    CALCULATE(
+			        SUM(Fact_Facturas[Total]),
+			        REMOVEFILTERS(Fact_Facturas),
+			        Fact_Facturas[Anio_Emision] = AnioActual,
+			        Fact_Facturas[Mes_Emision] = MesActual
+			    )
+			VAR VentasMesAnioAnterior =
+			    CALCULATE(
+			        SUM(Fact_Facturas[Total]),
+			        REMOVEFILTERS(Fact_Facturas),
+			        Fact_Facturas[Anio_Emision] = AnioActual - 1,
+			        Fact_Facturas[Mes_Emision] = MesActual
+			    )
+			RETURN DIVIDE(VentasMesActual - VentasMesAnioAnterior, VentasMesAnioAnterior)
+		formatString: +0.0%;-0.0%
+		displayFolder: Resumen
+		lineageTag: 38dc18ea-023f-4b32-a68f-9c7e2aa21e2c
+
+	measure 'Ventas Totales (Semana, Mes Actual)' = CALCULATE([Ventas Totales], Fact_Facturas[Es_Mes_Actual] = 1)
+		formatString: $#,##0
+		displayFolder: Resumen
+		lineageTag: d8e167ec-a2bd-4526-99f4-4382b8f31c3a
+
+	measure 'Ventas Totales (Semana Actual)' = CALCULATE([Ventas Totales], Fact_Facturas[Es_Semana_Actual] = 1)
+		formatString: $#,##0
+		displayFolder: Resumen
+		lineageTag: 5df8f36b-96c3-40b6-bcad-a352a81f7d2e
+
+	measure 'Ventas Totales (Mes Actual, por Cliente)' = CALCULATE([Ventas Totales], Fact_Facturas[Es_Mes_Actual] = 1)
+		formatString: $#,##0
+		displayFolder: Resumen
+		lineageTag: e9d964bc-312f-4cfe-94ff-b9aa0cf4ba49
+
+	/// Ventas del mismo periodo del anio anterior, acotadas a la ultima fecha con ventas reales para que la comparacion sea like-for-like (no compara 8 meses contra 12). Respeta los slicers de Cliente.
+	measure 'Ventas Año Anterior' =
+			VAR _corte =
+			    CALCULATE(MAX(Fact_Facturas[Fecha_Emision]), ALL(Fact_Facturas), ALL(Calendario))
+			RETURN
+			CALCULATE(
+			    [Ventas Totales],
+			    SAMEPERIODLASTYEAR(
+			        FILTER(VALUES(Calendario[Fecha]), Calendario[Fecha] <= _corte)
+			    )
+			)
+		formatString: $#,##0
+		displayFolder: Ventas
+		lineageTag: b51932e9-cddf-4e61-9f07-f45c9fe44d73
+
+	/// Variacion vs mismo periodo del año anterior. Respeta todos los slicers (Ano, Mes, Cliente).
+	measure 'Variacion % YoY' =
+			VAR _anterior = [Ventas Año Anterior]
+			RETURN DIVIDE([Ventas Totales] - _anterior, _anterior)
+		formatString: +0.0%;-0.0%
+		displayFolder: Ventas
+		lineageTag: 6334e933-d23e-49e4-b976-1e22e83b7b89
+
+	/// Chip de filtros para paginas cuyos slicers Anio/Mes cuelgan de Calendario (Ventas, y a futuro Cobranzas). La medida original 'Filtros Aplicados' lee la jerarquia automatica LocalDateTable y solo sirve en Resumen.
+	measure 'Filtros Aplicados (Calendario)' =
+			VAR vAno =
+			    SWITCH(TRUE(),
+			        HASONEVALUE(Calendario[Año]), FORMAT(SELECTEDVALUE(Calendario[Año]), "0"),
+			        ISFILTERED(Calendario[Año]), "Varios",
+			        "Todos")
+			VAR vMes =
+			    SWITCH(TRUE(),
+			        HASONEVALUE(Calendario[Mes]), SELECTEDVALUE(Calendario[Mes]),
+			        ISFILTERED(Calendario[Mes]), "Varios",
+			        "Todos")
+			VAR vCliente =
+			    SWITCH(TRUE(),
+			        HASONEVALUE(Dim_Clientes[Nombre_Cliente]), SELECTEDVALUE(Dim_Clientes[Nombre_Cliente]),
+			        ISFILTERED(Dim_Clientes[Nombre_Cliente]), "Varios",
+			        "Todos")
+			RETURN "Año: " & vAno & "   |   Mes: " & vMes & "   |   Cliente: " & vCliente
+		displayFolder: Resumen
+		lineageTag: 4212df71-89ad-4c32-b9b3-55f06696a6b5
+
+	column Medida
+		isHidden
+		lineageTag: 45a05c41-f778-48ab-b7a0-5c8e087e4af5
+		isNameInferred
+		sourceColumn: [Medida]
+
+	partition '_Medidas Ventas' = calculated
+		mode: import
+		source = ROW("Medida", BLANK())
+

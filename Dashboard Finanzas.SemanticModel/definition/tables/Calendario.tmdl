@@ -1,0 +1,47 @@
+table Calendario
+	lineageTag: 02d4925b-ef43-4fa4-bb8a-7ecccaf36802
+	dataCategory: Time
+
+	column Fecha
+		isUnique
+		lineageTag: 8234f44f-7c62-42f6-a6fa-a240099c483b
+		isNameInferred
+		sourceColumn: [Fecha]
+
+	column Año = YEAR(Calendario[Fecha])
+		dataType: int64
+		formatString: 0
+		lineageTag: f9eb26ac-ad39-4a24-98d3-d10b056a0660
+		summarizeBy: none
+
+	column MesNum = MONTH(Calendario[Fecha])
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d185df23-0c25-444e-85b6-fcffca8f1055
+		summarizeBy: none
+
+	column Mes = SWITCH(MONTH(Calendario[Fecha]), 1, "Enero", 2, "Febrero", 3, "Marzo", 4, "Abril", 5, "Mayo", 6, "Junio", 7, "Julio", 8, "Agosto", 9, "Septiembre", 10, "Octubre", 11, "Noviembre", 12, "Diciembre")
+		dataType: string
+		lineageTag: 6055ac65-955d-4f26-90ec-116d0d5f801f
+		summarizeBy: none
+		sortByColumn: MesNum
+
+	column AñoMes = YEAR(Calendario[Fecha]) * 100 + MONTH(Calendario[Fecha])
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1155ae23-4115-4e82-a969-4c853ab67b06
+		summarizeBy: none
+
+	/// Etiqueta de eje temporal (ej. Ene-2026), ordenada cronologicamente por AñoMes. Usar como eje X en series de tiempo para que SAMEPERIODLASTYEAR funcione.
+	column Periodo = LEFT(Calendario[Mes], 3) & "-" & Calendario[Año]
+		dataType: string
+		lineageTag: d1735daf-711e-4c66-bd8b-70ed9cc791aa
+		summarizeBy: none
+		sortByColumn: AñoMes
+
+	partition Calendario = calculated
+		mode: import
+		source = SELECTCOLUMNS(CALENDAR(DATE(2017,1,1), DATE(2028,12,31)), "Fecha", [Date])
+

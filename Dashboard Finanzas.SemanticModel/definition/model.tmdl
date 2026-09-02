@@ -1,0 +1,30 @@
+model Model
+	culture: es-CL
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-CL
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Dim_Clientes","Fact_Operaciones","Fact_Facturas","Fact_VentasCompras_Mensual"]
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table Dim_Clientes
+ref table Fact_Operaciones
+ref table Fact_Facturas
+ref table Fact_VentasCompras_Mensual
+ref table DateTableTemplate_d77fdd70-4bad-4d03-8ab1-3d82ac9499ca
+ref table LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5
+ref table LocalDateTable_4f667f4d-b3c7-41dc-8442-9f01f43751b2
+ref table LocalDateTable_09d1e76d-4aa0-43d4-b480-79013aab3ea6
+ref table Calendario
+ref table '_Medidas Cobranza'
+ref table '_Medidas Ventas'
+ref table RefreshDate
+
+ref cultureInfo es-CL
+

@@ -1,0 +1,146 @@
+cultureInfo es-CL
+
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "dim_clientes.nombre_cliente": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Dim_Clientes",
+			          "ConceptualProperty": "Nombre_Cliente"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Cliente": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fact_facturas.fecha_vencimiento": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fact_Facturas",
+			          "ConceptualProperty": "Fecha_Vencimiento"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Fecha de Vencimiento": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fact_facturas.n_factura": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fact_Facturas",
+			          "ConceptualProperty": "N_Factura"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "N° Factura": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fact_facturas.fecha_emision": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fact_Facturas",
+			          "ConceptualProperty": "Fecha_Emision"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "table_medidas_ventas.ventas_totales": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas Ventas",
+			          "ConceptualProperty": "Ventas Totales"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Monto": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fact_facturas.dias_atraso": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fact_Facturas",
+			          "ConceptualProperty": "Dias_Atraso"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Días": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fact_facturas.total": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fact_Facturas",
+			          "ConceptualProperty": "Total"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Monto": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+

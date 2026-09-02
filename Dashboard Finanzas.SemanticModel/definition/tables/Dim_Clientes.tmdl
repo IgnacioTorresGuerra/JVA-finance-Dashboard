@@ -1,0 +1,61 @@
+table Dim_Clientes
+	lineageTag: 9e1bee0e-4b09-46bd-ac3c-e9ac8b763a32
+
+	column Cliente_ID
+		dataType: string
+		lineageTag: 7934f908-4ef7-4bc0-a096-6f9d769aff55
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nombre_Cliente
+		dataType: string
+		lineageTag: 1831b5bb-a264-495a-96bb-1138b482292f
+		summarizeBy: none
+		sourceColumn: Nombre_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column RUT
+		dataType: string
+		lineageTag: 4e00695e-c71e-4c07-b587-018a40938201
+		summarizeBy: none
+		sourceColumn: RUT
+
+		annotation SummarizationSetBy = Automatic
+
+	column N_Ordenes_Trabajo
+		dataType: int64
+		formatString: 0
+		lineageTag: 2dea0c3c-bb80-4dba-93d6-87624deea67a
+		summarizeBy: sum
+		sourceColumn: N_Ordenes_Trabajo
+
+		annotation SummarizationSetBy = Automatic
+
+	column N_Facturas
+		dataType: int64
+		formatString: 0
+		lineageTag: e9ac1cfd-728d-44bb-9e89-da16db28a2be
+		summarizeBy: sum
+		sourceColumn: N_Facturas
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Clientes = m
+		mode: import
+		source =
+				let
+				  Origen = Excel.Workbook(File.Contents("C:\Users\ignac\Dropbox\JVA ADM\Dashboards\Portfolio\jva-finance-dashboard\data\BASE_DE_DATOS_JVA_demo.xlsx"), null, true),
+				  #"Navegación 1" = Origen{[Item = "Dim_Clientes", Kind = "Sheet"]}[Data],
+				  #"Encabezados promovidos" = Table.PromoteHeaders(#"Navegación 1", [PromoteAllScalars = true]),
+				  #"Tipo de columna cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos", {{"Cliente_ID", type text}, {"Nombre_Cliente", type text}, {"RUT", type text}, {"N_Ordenes_Trabajo", Int64.Type}, {"N_Facturas", Int64.Type}}, "es"),
+				    #"Filas filtradas" = Table.SelectRows(#"Tipo de columna cambiado", each ([Nombre_Cliente] <> "-") and ([RUT] <> "Sin RUT"))
+				in
+				  #"Filas filtradas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

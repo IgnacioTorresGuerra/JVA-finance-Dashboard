@@ -1,0 +1,157 @@
+table Fact_Operaciones
+	lineageTag: 385b975e-6354-4df7-bba8-19e3f37773c8
+
+	column OT_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 24838d55-57a2-4a83-9156-28d02570f37c
+		summarizeBy: count
+		sourceColumn: OT_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column N_OT
+		dataType: string
+		lineageTag: f15f7dd9-a676-403d-8bcb-e6bc863bdf23
+		summarizeBy: none
+		sourceColumn: N_OT
+
+		annotation SummarizationSetBy = Automatic
+
+	column OT_Multicomponente
+		dataType: string
+		lineageTag: 9987452a-4379-46b4-8c07-b40521bcbfe6
+		summarizeBy: none
+		sourceColumn: OT_Multicomponente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Alerta_OT_Cliente_Distinto
+		dataType: string
+		lineageTag: a4b81b29-8e0a-4d3d-9e3a-b0ef69d9f057
+		summarizeBy: none
+		sourceColumn: Alerta_OT_Cliente_Distinto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha_Ingreso
+		dataType: int64
+		formatString: 0
+		lineageTag: b845c46c-a727-4b18-9313-f8a7de67816f
+		summarizeBy: sum
+		sourceColumn: Fecha_Ingreso
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente_ID
+		dataType: string
+		lineageTag: 594ac2a5-7374-4ecb-b1ad-1e28ce81dbd4
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente_Registrado
+		dataType: string
+		lineageTag: d261e902-826b-4a7f-acb2-343185a517b5
+		summarizeBy: none
+		sourceColumn: Cliente_Registrado
+
+		annotation SummarizationSetBy = Automatic
+
+	column RUT_Registrado
+		dataType: string
+		lineageTag: dfeae75b-9f1e-4efb-bf0d-3d44e0bfc75d
+		summarizeBy: none
+		sourceColumn: RUT_Registrado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Guia_Despacho
+		dataType: string
+		lineageTag: 2dd0dc51-a5bb-4d94-97fa-7e314727a7f9
+		summarizeBy: none
+		sourceColumn: Guia_Despacho
+
+		annotation SummarizationSetBy = Automatic
+
+	column Equipo_Componente
+		dataType: string
+		lineageTag: 6e251abe-a0fa-4a58-900c-22b29dec1000
+		summarizeBy: none
+		sourceColumn: Equipo_Componente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo_Ingreso
+		dataType: string
+		lineageTag: 00d79c78-c80a-4edd-9c1e-6dddf4aa768c
+		summarizeBy: none
+		sourceColumn: Motivo_Ingreso
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo_Ingreso_Original
+		dataType: string
+		lineageTag: fe527bed-1ac7-4274-b42e-dc0ec0bbaff7
+		summarizeBy: none
+		sourceColumn: Motivo_Ingreso_Original
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha_Despacho
+		dataType: int64
+		formatString: 0
+		lineageTag: d6296650-f604-4526-b68e-21dff8b23217
+		summarizeBy: sum
+		sourceColumn: Fecha_Despacho
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha_Despacho_Nota
+		dataType: string
+		lineageTag: 775ed901-ba14-435e-80c9-3cd455b669c7
+		summarizeBy: none
+		sourceColumn: Fecha_Despacho_Nota
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha_Informe
+		dataType: string
+		lineageTag: 7990d91f-d063-4f49-8fd7-337753d13638
+		summarizeBy: none
+		sourceColumn: Fecha_Informe
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: ba625882-8646-4062-ac3c-71815a041ed9
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado_Nota
+		dataType: string
+		lineageTag: 90f4a288-10d9-4e7b-b392-aca9147e04bd
+		summarizeBy: none
+		sourceColumn: Estado_Nota
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_Operaciones = m
+		mode: import
+		source =
+				let
+				  Origen = Excel.Workbook(File.Contents("C:\Users\ignac\Dropbox\JVA ADM\Dashboards\Portfolio\jva-finance-dashboard\data\BASE_DE_DATOS_JVA_demo.xlsx"), null, true),
+				  #"Navegación 1" = Origen{[Item = "Fact_Operaciones", Kind = "Sheet"]}[Data],
+				  #"Encabezados promovidos" = Table.PromoteHeaders(#"Navegación 1", [PromoteAllScalars = true]),
+				  #"Tipo de columna cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos", {{"OT_ID", Int64.Type}, {"N_OT", type text}, {"OT_Multicomponente", type text}, {"Alerta_OT_Cliente_Distinto", type text}, {"Fecha_Ingreso", Int64.Type}, {"Cliente_ID", type text}, {"Cliente_Registrado", type text}, {"RUT_Registrado", type text}, {"Guia_Despacho", type text}, {"Equipo_Componente", type text}, {"Motivo_Ingreso", type text}, {"Motivo_Ingreso_Original", type text}, {"Fecha_Despacho", Int64.Type}, {"Fecha_Despacho_Nota", type text}, {"Estado", type text}, {"Estado_Nota", type text}}, "es")
+				in
+				  #"Tipo de columna cambiado"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

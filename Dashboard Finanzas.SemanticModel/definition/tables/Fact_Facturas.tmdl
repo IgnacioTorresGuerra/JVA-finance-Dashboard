@@ -1,0 +1,221 @@
+table Fact_Facturas
+	lineageTag: 87fbf999-06dd-4f64-95d1-67127cd4cd21
+
+	column N_Factura
+		dataType: int64
+		formatString: 0
+		lineageTag: a6ad7551-1ce5-4ee5-9448-4600b75239c4
+		summarizeBy: sum
+		sourceColumn: N_Factura
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo_Documento
+		dataType: string
+		lineageTag: 2b32503d-4921-4bf9-afdb-925dc060062c
+		summarizeBy: none
+		sourceColumn: Tipo_Documento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente_ID
+		dataType: string
+		lineageTag: 8099cf97-7f9c-404b-8096-f3d92dda7309
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente_Registrado
+		dataType: string
+		lineageTag: 47e94c55-16a1-4e72-a26a-0068402c0852
+		summarizeBy: none
+		sourceColumn: Cliente_Registrado
+
+		annotation SummarizationSetBy = Automatic
+
+	column RUT_Registrado
+		dataType: string
+		lineageTag: 106c24f4-d083-4e96-8f42-333f6f68c95a
+		summarizeBy: none
+		sourceColumn: RUT_Registrado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha_Emision
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5cb7fbf3-c80f-42e6-a3d3-95e44b61c1f4
+		summarizeBy: none
+		sourceColumn: Fecha_Emision
+
+		variation Variación
+			isDefault
+			relationship: 96ce629d-d789-49a8-ba80-f58b05c34e5f
+			defaultHierarchy: LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Fecha_Vencimiento
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 682dccdf-1a1f-4dfb-ab07-f84e774c491b
+		summarizeBy: none
+		sourceColumn: Fecha_Vencimiento
+
+		variation Variación
+			isDefault
+			relationship: e85d5e34-aa6c-4e13-b923-5bde05dfc057
+			defaultHierarchy: LocalDateTable_4f667f4d-b3c7-41dc-8442-9f01f43751b2.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Neto
+		dataType: int64
+		formatString: 0
+		lineageTag: b50879b0-1d87-435a-b64b-81d6959afe15
+		summarizeBy: sum
+		sourceColumn: Neto
+
+		annotation SummarizationSetBy = Automatic
+
+	column IVA
+		dataType: double
+		lineageTag: 317a24db-8f00-4033-a1b5-7cdb8cb50453
+		summarizeBy: sum
+		sourceColumn: IVA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Total
+		dataType: double
+		lineageTag: a2643052-fd66-424b-bfa7-2071be4201fd
+		summarizeBy: sum
+		sourceColumn: Total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Fecha_Real_Pago
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 333fc907-f357-4a23-a95e-c4331fa38828
+		summarizeBy: none
+		sourceColumn: Fecha_Real_Pago
+
+		variation Variación
+			isDefault
+			relationship: de9082c4-db94-4484-933f-3f72df9ee2df
+			defaultHierarchy: LocalDateTable_09d1e76d-4aa0-43d4-b480-79013aab3ea6.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Banco_Pago
+		dataType: string
+		lineageTag: 2b330619-f565-46d8-812e-68af3887a6f8
+		summarizeBy: none
+		sourceColumn: Banco_Pago
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dias_Atraso = IF(Fact_Facturas[Pagada] = "Sí" && ISBLANK(Fact_Facturas[Fecha_Real_Pago]), 0, IF(ISBLANK(Fact_Facturas[Fecha_Real_Pago]), DATEDIFF(Fact_Facturas[Fecha_Vencimiento], TODAY(), DAY), DATEDIFF(Fact_Facturas[Fecha_Vencimiento], Fact_Facturas[Fecha_Real_Pago], DAY)))
+		formatString: 0
+		displayFolder: Cobranza
+		lineageTag: 01b131c1-a428-49f8-b8ff-1cf7cf0aab7a
+
+	column Anio_Emision = YEAR(Fact_Facturas[Fecha_Emision])
+		isHidden
+		formatString: 0
+		lineageTag: fb4e1521-8340-4d7e-b8cd-e379c6d23307
+
+	column Mes_Emision = MONTH(Fact_Facturas[Fecha_Emision])
+		isHidden
+		formatString: 0
+		lineageTag: 89d1fcfe-6b3b-4d26-a2dd-096a5aed50f4
+
+	column Rango_Mora = IF(ISBLANK(Fact_Facturas[Fecha_Real_Pago]), SWITCH(TRUE(), Fact_Facturas[Dias_Atraso] <= 0, "Al día", Fact_Facturas[Dias_Atraso] <= 30, "1-30 días", Fact_Facturas[Dias_Atraso] <= 60, "31-60 días", Fact_Facturas[Dias_Atraso] <= 90, "61-90 días", "+90 días"), "Pagada")
+		displayFolder: Cobranza
+		lineageTag: b76cb832-82c2-4ac2-a481-5d610a344757
+		sortByColumn: Rango_Mora_Orden
+
+	column Rango_Mora_Orden = IF(ISBLANK(Fact_Facturas[Fecha_Real_Pago]), SWITCH(TRUE(), Fact_Facturas[Dias_Atraso] <= 0, 1, Fact_Facturas[Dias_Atraso] <= 30, 2, Fact_Facturas[Dias_Atraso] <= 60, 3, Fact_Facturas[Dias_Atraso] <= 90, 4, 5), 6)
+		isHidden
+		formatString: 0
+		lineageTag: 72277cc7-baee-435e-b086-68d800c3e5f5
+
+	column Semana_Orden = Fact_Facturas[Anio_Emision] * 100 + WEEKNUM(Fact_Facturas[Fecha_Emision], 2)
+		isHidden
+		formatString: 0
+		lineageTag: 75c87f7f-66cb-480d-87e6-e6e4dfae9fce
+
+	column Semana_Emision = FORMAT(Fact_Facturas[Semana_Inicio], "dd-mmm") & " al " & FORMAT(Fact_Facturas[Semana_Inicio] + 6, "dd-mmm-yy")
+		displayFolder: Ventas
+		lineageTag: f7a49a35-7b64-4de6-b98d-b6291da32a41
+		sortByColumn: Semana_Orden
+
+	column Semana_Inicio = Fact_Facturas[Fecha_Emision] - WEEKDAY(Fact_Facturas[Fecha_Emision], 2) + 1
+		isHidden
+		formatString: dd-mm-yyyy
+		lineageTag: e7dc8b09-c0c2-4f8a-875b-ce362f6171b2
+
+	column Mes_Emision_Orden = Fact_Facturas[Anio_Emision] * 100 + Fact_Facturas[Mes_Emision]
+		isHidden
+		formatString: 0
+		lineageTag: bf56dce9-732c-43f4-b789-42558d05fcc2
+
+	column Mes_Emision_Label = FORMAT(Fact_Facturas[Fecha_Emision], "mmm-yyyy")
+		displayFolder: Ventas
+		lineageTag: 09f11b82-9b5a-4324-9cb9-4dabb0e38e42
+		sortByColumn: Mes_Emision_Orden
+
+	column Pagada
+		dataType: string
+		sourceProviderType: string
+		lineageTag: 79b3e857-7e3b-4fbd-b6a2-3e2fc3e28df7
+		sourceColumn: Pagada
+
+	column Es_Mes_Actual = IF(Fact_Facturas[Anio_Emision] = YEAR(TODAY()) && Fact_Facturas[Mes_Emision] = MONTH(TODAY()), 1, 0)
+		dataType: int64
+		isHidden
+		displayFolder: Resumen
+		lineageTag: 8ce15ff6-87ff-466a-b48f-c02ec4ede8da
+
+	column Es_Semana_Actual = IF(Fact_Facturas[Semana_Inicio] = TODAY() - WEEKDAY(TODAY(), 2) + 1, 1, 0)
+		dataType: int64
+		isHidden
+		displayFolder: Resumen
+		lineageTag: 18aa613e-a4d0-495c-8838-b3fe9ab73562
+
+	partition Fact_Facturas = m
+		mode: import
+		source =
+				let
+				  Origen = Excel.Workbook(File.Contents("C:\Users\ignac\Dropbox\JVA ADM\Dashboards\Portfolio\jva-finance-dashboard\data\BASE_DE_DATOS_JVA_demo.xlsx"), null, true),
+				  #"Navegación 1" = Origen{[Item = "Fact_Facturas", Kind = "Sheet"]}[Data],
+				  #"Encabezados promovidos" = Table.PromoteHeaders(#"Navegación 1", [PromoteAllScalars = true]),
+				  #"Tipo de columna cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos", {{"Factura_ID", Int64.Type}, {"N_Factura", Int64.Type}, {"Tipo_Documento", type text}, {"Cliente_ID", type text}, {"Cliente_Registrado", type text}, {"RUT_Registrado", type text}, {"Fecha_Emision", Int64.Type}, {"Fecha_Vencimiento", Int64.Type}, {"Neto", Int64.Type}, {"IVA", type number}, {"Total", type number}, {"Orden_Compra", type text}, {"Guia_Despacho", type text}, {"Pagada", type text}, {"Banco", type text}, {"Fecha_Real_Pago", Int64.Type}, {"Banco_Pago", type text}}, "es"),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo de columna cambiado",{"N_Correlativo", "Factura_ID"}),
+				    #"Filas filtradas" = Table.SelectRows(#"Columnas quitadas", each ([Tipo_Documento] = "Factura") and ([RUT_Registrado] <> null)),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Filas filtradas",{{"Fecha_Emision", type date}}),
+				    #"Filas filtradas1" = Table.SelectRows(#"Tipo cambiado", each ([Fecha_Emision] <> null)),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Filas filtradas1",{{"Fecha_Vencimiento", type date}}),
+				    #"Filas filtradas2" = Table.SelectRows(#"Tipo cambiado1", each ([Fecha_Vencimiento] <> null) and ([Neto] <> 0)),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Filas filtradas2",{"Orden_Compra", "Guia_Despacho", "Cedida", "Factoring", "Banco"}),
+				    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Columnas quitadas1",{{"Fecha_Real_Pago", type date}}),
+				    #"Filas filtradas3" = Table.SelectRows(#"Tipo cambiado2", each ([Banco_Pago] = null or [Banco_Pago] <> "Garantía de arriendo (no es banco)"))
+				in
+				    #"Filas filtradas3"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

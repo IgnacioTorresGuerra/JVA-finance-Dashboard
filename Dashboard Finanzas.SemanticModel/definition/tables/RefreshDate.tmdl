@@ -1,0 +1,13 @@
+table RefreshDate
+	isHidden
+	lineageTag: 1a31b4a9-6c23-47cb-ab03-3da4f45f5484
+
+	column RefreshDate
+		lineageTag: ee352f0e-15c3-4137-b6fb-3e287278a54e
+		isNameInferred
+		sourceColumn: [RefreshDate]
+
+	partition RefreshDate = calculated
+		mode: import
+		source = ROW("RefreshDate", NOW())
+

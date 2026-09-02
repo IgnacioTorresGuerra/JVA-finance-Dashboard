@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 334.18475118062969,
+            "y": 18.93489082265647
+          },
+          "nodeIndex": "Dim_Clientes",
+          "nodeLineageTag": "9e1bee0e-4b09-46bd-ac3c-e9ac8b763a32",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": -50
+          },
+          "nodeIndex": "Fact_Facturas",
+          "nodeLineageTag": "87fbf999-06dd-4f64-95d1-67127cd4cd21",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 618.36163941535972,
+            "y": -17.740116544906584
+          },
+          "nodeIndex": "Fact_Operaciones",
+          "nodeLineageTag": "385b975e-6354-4df7-bba8-19e3f37773c8",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852.36163941535972,
+            "y": 54.129941727546708
+          },
+          "nodeIndex": "Fact_VentasCompras_Mensual",
+          "nodeLineageTag": "a3c2b143-e343-4d9d-88f0-2ce44d4f55e6",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1086.3616394153596,
+            "y": 66.129941727546708
+          },
+          "nodeIndex": "Calendario",
+          "nodeLineageTag": "02d4925b-ef43-4fa4-bb8a-7ecccaf36802",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1320.3616394153596,
+            "y": 66.129941727546708
+          },
+          "nodeIndex": "_Medidas Cobranza",
+          "nodeLineageTag": "3c1bf9ab-a0ff-4cf0-adb5-3b5cafb86df9",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1554.3616394153596,
+            "y": 66.129941727546708
+          },
+          "nodeIndex": "_Medidas Ventas",
+          "nodeLineageTag": "41ab162e-de98-4731-9b6c-2ab332c154e1",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1788.3616394153596,
+            "y": 66.129941727546708
+          },
+          "nodeIndex": "RefreshDate",
+          "nodeLineageTag": "1a31b4a9-6c23-47cb-ab03-3da4f45f5484",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas las tablas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas las tablas",
+  "defaultDiagram": "Todas las tablas"
+}

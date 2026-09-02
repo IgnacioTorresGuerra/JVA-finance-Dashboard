@@ -1,0 +1,78 @@
+table Fact_VentasCompras_Mensual
+	lineageTag: a3c2b143-e343-4d9d-88f0-2ce44d4f55e6
+
+	column Anio
+		dataType: int64
+		formatString: 0
+		lineageTag: a1e09385-10bb-4bfc-bfc5-4aa55b9a0793
+		summarizeBy: sum
+		sourceColumn: Anio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: string
+		lineageTag: a32f769e-ef0f-43a6-a491-adfae708fbec
+		summarizeBy: none
+		sourceColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ventas
+		dataType: double
+		formatString: 0
+		lineageTag: acddc435-fa8a-43f7-8a17-458cab701fe4
+		summarizeBy: sum
+		sourceColumn: Ventas
+
+		annotation SummarizationSetBy = Automatic
+
+	column Compras
+		dataType: double
+		formatString: 0
+		lineageTag: 54417dd0-ad6c-4d0c-b6e7-ed8742d574eb
+		summarizeBy: sum
+		sourceColumn: Compras
+
+		annotation SummarizationSetBy = Automatic
+
+	column PPM_5pct
+		dataType: double
+		lineageTag: dff5a76b-a7ca-498e-b959-6176566b249c
+		summarizeBy: sum
+		sourceColumn: PPM_5pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PPM_Voluntario
+		dataType: double
+		formatString: 0
+		lineageTag: 4c508586-9bb5-4084-adb3-1c21c33c9f8e
+		summarizeBy: sum
+		sourceColumn: PPM_Voluntario
+
+		annotation SummarizationSetBy = Automatic
+
+	column FechaMes = DATE(Fact_VentasCompras_Mensual[Anio], SWITCH(Fact_VentasCompras_Mensual[Mes], "Enero",1,"Febrero",2,"Marzo",3,"Abril",4,"Mayo",5,"Junio",6,"Julio",7,"Agosto",8,"Septiembre",9,"Octubre",10,"Noviembre",11,"Diciembre",12, BLANK()), 1)
+		isHidden
+		formatString: Long Date
+		lineageTag: a431be32-cc16-43f0-98b7-f357d55efd94
+
+	partition Fact_VentasCompras_Mensual = m
+		mode: import
+		source =
+				let
+				  Origen = Excel.Workbook(File.Contents("C:\Users\ignac\Dropbox\JVA ADM\Dashboards\Portfolio\jva-finance-dashboard\data\BASE_DE_DATOS_JVA_demo.xlsx"), null, true),
+				  #"Navegación 1" = Origen{[Item = "Fact_VentasCompras_Mensual", Kind = "Sheet"]}[Data],
+				  #"Encabezados promovidos" = Table.PromoteHeaders(#"Navegación 1", [PromoteAllScalars = true]),
+				  #"Tipo de columna cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos", {{"Anio", Int64.Type}, {"Mes", type text}, {"Ventas", Int64.Type}, {"Compras", Int64.Type}, {"PPM_5pct", type number}, {"PPM_Voluntario", Int64.Type}}, "es"),
+				    #"Valor reemplazado" = Table.ReplaceValue(#"Tipo de columna cambiado",null,0,Replacer.ReplaceValue,{"Ventas", "Compras", "PPM_5pct", "PPM_Voluntario"})
+				in
+				    #"Valor reemplazado"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

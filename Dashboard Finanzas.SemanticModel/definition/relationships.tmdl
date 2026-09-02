@@ -1,0 +1,32 @@
+relationship AutoDetected_abde5a7e-1afc-41b6-9332-441214afce15
+	fromColumn: Fact_Operaciones.Cliente_ID
+	toColumn: Dim_Clientes.Cliente_ID
+
+relationship AutoDetected_a0653c3d-0fda-4539-8354-a9b58efa9eb6
+	fromColumn: Fact_Facturas.Cliente_ID
+	toColumn: Dim_Clientes.Cliente_ID
+
+relationship 96ce629d-d789-49a8-ba80-f58b05c34e5f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Fact_Facturas.Fecha_Emision
+	toColumn: LocalDateTable_ff6d0544-564c-4aed-adff-613da8abfdf5.Date
+
+relationship e85d5e34-aa6c-4e13-b923-5bde05dfc057
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Fact_Facturas.Fecha_Vencimiento
+	toColumn: LocalDateTable_4f667f4d-b3c7-41dc-8442-9f01f43751b2.Date
+
+relationship de9082c4-db94-4484-933f-3f72df9ee2df
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Fact_Facturas.Fecha_Real_Pago
+	toColumn: LocalDateTable_09d1e76d-4aa0-43d4-b480-79013aab3ea6.Date
+
+relationship Fact_Facturas_Fecha_Vencimiento_Calendario_Fecha
+	isActive: false
+	fromColumn: Fact_Facturas.Fecha_Vencimiento
+	toColumn: Calendario.Fecha
+
+relationship Fact_Facturas_Fecha_Emision_Calendario_Fecha
+	fromColumn: Fact_Facturas.Fecha_Emision
+	toColumn: Calendario.Fecha
+

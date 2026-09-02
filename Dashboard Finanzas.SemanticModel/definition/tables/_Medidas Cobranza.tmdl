@@ -1,0 +1,195 @@
+table '_Medidas Cobranza'
+	lineageTag: 3c1bf9ab-a0ff-4cf0-adb5-3b5cafb86df9
+
+	measure 'DPD Promedio' =
+			CALCULATE(
+			    AVERAGE(Fact_Facturas[Dias_Atraso]),
+			    Fact_Facturas[Dias_Atraso] > 0,
+			    ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			    Fact_Facturas[Pagada] <> "En demanda",
+			    Fact_Facturas[Pagada] <> "Sin registrar"
+			)
+		formatString: 0
+		displayFolder: Cobranza
+		lineageTag: 27497a5b-3795-47f9-a3c3-8b6ed9f992a1
+
+	measure '% Morosidad' =
+			VAR _abiertas =
+			    CALCULATE(
+			        COUNTROWS(Fact_Facturas),
+			        ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			        Fact_Facturas[Pagada] <> "En demanda",
+			        Fact_Facturas[Pagada] <> "Sin registrar"
+			    )
+			VAR _vencidas =
+			    CALCULATE(
+			        COUNTROWS(Fact_Facturas),
+			        Fact_Facturas[Dias_Atraso] > 0,
+			        ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			        Fact_Facturas[Pagada] <> "En demanda",
+			        Fact_Facturas[Pagada] <> "Sin registrar"
+			    )
+			RETURN DIVIDE(_vencidas, _abiertas)
+		formatString: 0.0%
+		displayFolder: Cobranza
+		lineageTag: 677116b1-f836-42c6-87ff-92e57d8ab845
+
+	measure 'DPD Maximo' =
+			CALCULATE(
+			    MAX(Fact_Facturas[Dias_Atraso]),
+			    Fact_Facturas[Dias_Atraso] > 0,
+			    ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			    Fact_Facturas[Pagada] <> "En demanda",
+			    Fact_Facturas[Pagada] <> "Sin registrar"
+			)
+		formatString: 0
+		displayFolder: Cobranza
+		lineageTag: 3ceeba99-ecbd-4b70-b5fe-69575df88fe1
+
+	measure 'Monto en Riesgo' =
+			CALCULATE(
+			    SUM(Fact_Facturas[Total]),
+			    Fact_Facturas[Dias_Atraso] > 0,
+			    ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			    Fact_Facturas[Pagada] <> "En demanda",
+			    Fact_Facturas[Pagada] <> "Sin registrar"
+			)
+		formatString: $#,##0
+		displayFolder: Cobranza
+		lineageTag: fc0d3afb-e371-4e12-9641-8939e3401df0
+
+	measure 'DPD Ultimos 3M' =
+			VAR UltimaFecha = CALCULATE(MAX(Fact_Facturas[Fecha_Vencimiento]))
+			RETURN
+			CALCULATE(
+			    [DPD Promedio],
+			    DATESINPERIOD(Calendario[Fecha], UltimaFecha, -3, MONTH),
+			    USERELATIONSHIP(Fact_Facturas[Fecha_Vencimiento], Calendario[Fecha])
+			)
+		formatString: 0
+		displayFolder: Cobranza
+		lineageTag: c9febcc9-a29d-4fa6-a599-290d42837049
+
+	measure 'Variacion Tendencia' = [DPD Ultimos 3M] - [DPD Promedio]
+		formatString: 0.0
+		displayFolder: Cobranza
+		lineageTag: f71af028-932c-4f42-8de3-b1ad14aa21ca
+
+	measure 'Ranking Moroso' = IF([Monto en Riesgo] > 0, RANKX(FILTER(ALL(Dim_Clientes), CALCULATE([Monto en Riesgo]) > 0), CALCULATE([Monto en Riesgo]), , DESC))
+		formatString: 0
+		lineageTag: 7e98de25-de75-4a47-965f-30a3122e9cfc
+
+	measure '% Morosidad (Mes Actual)' =
+			VAR _abiertas =
+			    CALCULATE(
+			        COUNTROWS(Fact_Facturas),
+			        REMOVEFILTERS(Fact_Facturas),
+			        ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			        Fact_Facturas[Pagada] <> "En demanda",
+			        Fact_Facturas[Pagada] <> "Sin registrar"
+			    )
+			VAR _vencidas =
+			    CALCULATE(
+			        COUNTROWS(Fact_Facturas),
+			        REMOVEFILTERS(Fact_Facturas),
+			        Fact_Facturas[Dias_Atraso] > 0,
+			        ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			        Fact_Facturas[Pagada] <> "En demanda",
+			        Fact_Facturas[Pagada] <> "Sin registrar"
+			    )
+			RETURN DIVIDE(_vencidas, _abiertas)
+		formatString: 0.0%
+		displayFolder: Resumen
+		lineageTag: 972411bb-9466-416f-afd9-73d1c54bb0b9
+
+	measure 'Monto en Riesgo (Mes Actual)' =
+			CALCULATE(
+			    SUM(Fact_Facturas[Total]),
+			    REMOVEFILTERS(Fact_Facturas),
+			    Fact_Facturas[Dias_Atraso] > 0,
+			    ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			    Fact_Facturas[Pagada] <> "En demanda",
+			    Fact_Facturas[Pagada] <> "Sin registrar"
+			)
+		formatString: $#,##0
+		displayFolder: Resumen
+		lineageTag: 9cd2a6be-5756-410b-a287-45ac51b56f67
+
+	measure 'Monto (Vence Esta Semana)' =
+			VAR InicioSemana = TODAY() - WEEKDAY(TODAY(), 2) + 1
+			VAR FinSemana = InicioSemana + 6
+			RETURN
+			CALCULATE(
+			    SUM(Fact_Facturas[Total]),
+			    KEEPFILTERS(Fact_Facturas[Fecha_Vencimiento] >= InicioSemana),
+			    KEEPFILTERS(Fact_Facturas[Fecha_Vencimiento] <= FinSemana),
+			    ISBLANK(Fact_Facturas[Fecha_Real_Pago]),
+			    Fact_Facturas[Pagada] <> "En demanda",
+			    Fact_Facturas[Pagada] <> "Sin registrar"
+			)
+		formatString: $#,##0
+		displayFolder: Resumen
+		lineageTag: b07edd44-5c17-4c8c-8d6a-b1d221ae24e9
+
+	/// Dias de atraso promedio al momento de pagar, solo facturas ya pagadas. Mide comportamiento de pago historico. Negativo = pagan antes del vencimiento. Distinta de 'DPD Promedio', que mide cartera abierta vencida.
+	measure 'DPD Promedio (Pagadas)' =
+			CALCULATE(
+			    AVERAGE(Fact_Facturas[Dias_Atraso]),
+			    Fact_Facturas[Pagada] = "Sí",
+			    NOT ISBLANK(Fact_Facturas[Fecha_Real_Pago])
+			)
+		formatString: +0.0;-0.0;0.0
+		displayFolder: Cobranza
+		lineageTag: 1559dd7b-ff7e-4d78-8295-c76cf0e48221
+
+	/// Proporcion de facturas pagadas que se pagaron despues del vencimiento. El +0 en el numerador evita el blank cuando el resultado real es cero (si no, la tarjeta muestra '--' en vez de '0,0%').
+	measure '% Pagadas con Atraso' =
+			VAR _pagadas =
+			    CALCULATE(COUNTROWS(Fact_Facturas),
+			        Fact_Facturas[Pagada] = "Sí",
+			        NOT ISBLANK(Fact_Facturas[Fecha_Real_Pago]))
+			VAR _atrasadas =
+			    CALCULATE(COUNTROWS(Fact_Facturas),
+			        Fact_Facturas[Pagada] = "Sí",
+			        Fact_Facturas[Dias_Atraso] > 0,
+			        NOT ISBLANK(Fact_Facturas[Fecha_Real_Pago]))
+			RETURN DIVIDE(_atrasadas + 0, _pagadas)
+		formatString: 0.0%
+		displayFolder: Cobranza
+		lineageTag: 16ad4d3a-5eea-4d82-aa90-409d397db595
+
+	/// Peor atraso registrado entre las facturas ya pagadas del periodo filtrado.
+	measure 'DPD Maximo (Pagadas)' =
+			CALCULATE(
+			    MAX(Fact_Facturas[Dias_Atraso]),
+			    Fact_Facturas[Pagada] = "Sí",
+			    NOT ISBLANK(Fact_Facturas[Fecha_Real_Pago])
+			)
+		formatString: 0
+		displayFolder: Cobranza
+		lineageTag: fd9ff9ab-0731-419b-aec4-f3b007b52f76
+
+	/// Dias promedio desde la emision hasta el pago efectivo (equivalente a DSO). Usa resta de fechas en vez de DATEDIFF para tolerar pagos anticipados (valores negativos).
+	measure 'Dias Promedio de Cobro' =
+			CALCULATE(
+			    AVERAGEX(
+			        Fact_Facturas,
+			        INT(Fact_Facturas[Fecha_Real_Pago] - Fact_Facturas[Fecha_Emision])
+			    ),
+			    Fact_Facturas[Pagada] = "Sí",
+			    NOT ISBLANK(Fact_Facturas[Fecha_Real_Pago])
+			)
+		formatString: 0
+		displayFolder: Cobranza
+		lineageTag: 7e384e90-4176-4f99-a173-46dffc013eed
+
+	column Medida
+		isHidden
+		lineageTag: a9c2fdf1-409a-4b56-abaa-83fa93d8fc5e
+		isNameInferred
+		sourceColumn: [Medida]
+
+	partition '_Medidas Cobranza' = calculated
+		mode: import
+		source = ROW("Medida", BLANK())
+
