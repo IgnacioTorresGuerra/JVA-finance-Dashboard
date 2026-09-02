@@ -1,0 +1,27 @@
+# Nunca subir datos reales ni respaldos, aunque terminen en esta carpeta por error.
+*respaldo*.xlsx
+*_backup*.xlsx
+sync_facturacion_log.txt
+QA_Calidad_Datos*.xlsx
+
+# Credenciales / entorno — nunca deben existir aquí, pero por si acaso.
+.env
+*.env
+*.pem
+*.key
+secrets.json
+
+# Basura de Python.
+__pycache__/
+*.pyc
+
+# Cachés/temporales de Power BI Desktop.
+*.pbix
+.pbi/
+~$*
+
+# El Excel de PRODUCCION nunca debe entrar aqui. En agosto de 2026 una copia
+# suya con 4 de 6 hojas SIN anonimizar termino publicada; el demo debe salir
+# siempre de scripts/anonimizar_demo.py y pasar scripts/verificar_demo.py.
+BASE_DE_DATOS_JVA.xlsx
+Facturacion clientes JVA.xlsx

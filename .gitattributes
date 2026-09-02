@@ -1,0 +1,5 @@
+# TMDL es el lenguaje de definicion del modelo semantico. Linguist lo
+# clasifica como "data" y por defecto lo excluye de la barra de lenguajes,
+# igual que el JSON del PBIR. Sin esto el repo aparece como 100% Python por
+# los tres scripts del pipeline, que son la parte mas chica del trabajo.
+*.tmdl linguist-detectable=true
