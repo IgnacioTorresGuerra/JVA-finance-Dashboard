@@ -66,7 +66,7 @@ Cuatro KPIs nuevos, distintos de los de cartera abierta: DPD Promedio al Pagar, 
 
 ## Los bugs de calidad de datos
 
-Esta es la parte del proyecto que más enseñó. Ninguno se encontró buscándolo: todos aparecieron al validar un número que se veía raro.
+Esta es la parte del proyecto que más enseñó. Ninguno se encontró buscándolo: todos aparecieron al validar un número que se veía raro. Abajo va el resumen; el detalle completo — síntoma, causa, corrección y efecto medido de cada uno — está en [`documentacion/calidad_datos.md`](documentacion/calidad_datos.md).
 
 ### 1. La morosidad marcaba 51,5%; el número real era ~10%
 
@@ -168,6 +168,23 @@ Es el hallazgo central de la página de Cobranzas: la proporción de facturas qu
 Un DPD negativo significa que, en promedio, se paga antes del vencimiento. 2020 y 2021 tienen muy pocas facturas, así que sus porcentajes no son representativos.
 
 Las cifras del dashboard pueden diferir en décimas: las medidas DAX aplican exclusiones adicionales (litigios y facturas sin estado registrado) que este cálculo directo no replica.
+
+---
+
+---
+
+## Cómo explorar el proyecto
+
+| Si quieres revisar... | Empieza aquí |
+|---|---|
+| El caso de negocio y a quién sirve | [`documentacion/definicion_proyecto.md`](documentacion/definicion_proyecto.md) |
+| Qué hay en los datos | [`documentacion/diccionario_datos.md`](documentacion/diccionario_datos.md) |
+| Las medidas DAX una por una | [`documentacion/diccionario_kpis.md`](documentacion/diccionario_kpis.md) |
+| El modelo y sus relaciones | [`documentacion/modelo_dimensional.md`](documentacion/modelo_dimensional.md) |
+| Los bugs de datos, en detalle | [`documentacion/calidad_datos.md`](documentacion/calidad_datos.md) |
+| Cómo se anonimizó el set | [`documentacion/anonimizacion.md`](documentacion/anonimizacion.md) |
+| El pipeline diario | [`scripts/sync_facturacion_a_base.py`](scripts/sync_facturacion_a_base.py) |
+| Las definiciones del reporte | `Dashboard Finanzas.Report/definition/` — texto plano, se leen en el navegador |
 
 ---
 
