@@ -1,0 +1,115 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY26SU07",
+      "reportVersionAtImport": {
+        "visual": "2.11.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "JVA_Corporativo-c71de803.json",
+      "reportVersionAtImport": {
+        "visual": "2.11.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY26SU07",
+          "path": "BaseThemes/CY26SU07.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "JVA_Corporativo-c71de803.json",
+          "path": "JVA_Corporativo-c71de803.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "JVA-0125002361691714703.png",
+          "path": "JVA-0125002361691714703.png",
+          "type": "Image"
+        },
+        {
+          "name": "PowerBi_Background_comercial15980357960902625.svg",
+          "path": "PowerBi_Background_comercial15980357960902625.svg",
+          "type": "Image"
+        },
+        {
+          "name": "JVA_icona3f6daf480ff4970a.png",
+          "path": "JVA_icona3f6daf480ff4970a.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_resumen4cc0a75263ad4b.png",
+          "path": "icon_resumen4cc0a75263ad4b.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_ventas3c8257f85ced42.png",
+          "path": "icon_ventas3c8257f85ced42.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_cobranzas6d4fd8eda32845.png",
+          "path": "icon_cobranzas6d4fd8eda32845.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true,
+    "customMemoryLimit": "1048576",
+    "customTimeoutLimit": "225"
+  }
+}
