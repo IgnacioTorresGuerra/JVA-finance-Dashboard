@@ -77,9 +77,17 @@ Las fechas no se tocan porque los indicadores de comportamiento de pago —días
 | Solape de llaves con producción | cero |
 | Filas idénticas a producción, por hoja | menos del 5 % |
 | Montos que coincidan con los reales | cero |
-| Nombres reales en archivos de texto | cero |
+| Razones sociales reales en archivos de texto | cero |
 
 Los valores centinela —`Sin RUT`, `NULO`, `N/A`— se excluyen del universo de secretos: existen en producción y es correcto que sigan en el demo.
+
+### Los dos barridos tienen sensibilidad distinta, a propósito
+
+**Sobre las celdas del Excel** la búsqueda es deliberadamente agresiva: ignora mayúsculas, tildes, espacios y puntuación, así que encuentra la marca suelta dentro de una descripción de equipo aunque venga pegada a otra palabra. Una celda es corta y escrita por un sistema; el exceso de celo casi no cuesta.
+
+**Sobre los archivos de texto del repositorio** se busca la razón social **completa**, con límites de palabra. Aplicar ahí el mismo criterio agresivo se probó y no funciona: buena parte de la cartera son personas naturales, y varias razones sociales están hechas de sustantivos corrientes. Palabras como `TRABAJOS`, `PUERTO` o `GROUP` marcaban prosa y código perfectamente inocentes — incluido el apellido del autor del proyecto. Una compuerta que grita lobo se termina desactivando, que es exactamente el fallo que se quiere evitar.
+
+El reparto queda así: el barrido de celdas cubre la marca suelta dentro de un texto; el de archivos cubre el caso que aquel no puede ver, que es un nombre real **escrito a mano** en el código o en la documentación. Ese fue el origen de la fuga descrita más abajo, y es la clase de error que este paso existe para atrapar.
 
 ---
 

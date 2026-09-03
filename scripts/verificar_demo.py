@@ -5,7 +5,9 @@ No reutiliza nada de anonimizar_demo.py a proposito: si el anonimizador tiene
 un bug de logica, este script tiene que detectarlo igual. Revisa CADA celda de
 CADA hoja. Sale con codigo != 0 si encuentra cualquier fuga.
 """
-import openpyxl, re, unicodedata, sys
+import io, os, re, sys, unicodedata
+
+import openpyxl
 
 REAL = r"C:\Users\ignac\Dropbox\JVA ADM\BASE_DE_DATOS_JVA.xlsx"
 DEMO = (r"C:\Users\ignac\Dropbox\JVA ADM\Dashboards\Portfolio"
@@ -17,6 +19,32 @@ def norm(s):
     s = unicodedata.normalize("NFKD", str(s))
     s = "".join(c for c in s if not unicodedata.combining(c))
     return re.sub(r"[^A-Z0-9]", "", s.upper())
+
+
+def palabras(s):
+    """Como norm(), pero deja los separadores como espacios.
+
+    norm() pega todo, asi que encuentra nombres a caballo entre dos palabras:
+    dos palabras cualesquiera, pegadas, forman una tercera que no esta ahi.
+    En una celda de Excel ese exceso de celo es barato; sobre prosa y codigo es
+    puro falso positivo, y una compuerta que grita lobo termina ignorada. Aqui
+    se compara con limites de palabra.
+    """
+    s = unicodedata.normalize("NFKD", str(s))
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return " " + re.sub(r"[^A-Z0-9]+", " ", s.upper()).strip() + " "
+
+
+# Razones sociales que son solo una palabra generica: buscarlas marcaria cada
+# linea del repositorio sin identificar a nadie.
+GENERICOS = {
+    "SERVICIOS", "SERVICIO", "INDUSTRIAL", "INDUSTRIALES", "INDUSTRIA",
+    "LIMITADA", "LTDA", "EIRL", "SOCIEDAD", "COMERCIAL", "EMPRESA", "EMPRESAS",
+    "CHILE", "MINERA", "MINERIA", "TRANSPORTE", "TRANSPORTES", "INGENIERIA",
+    "CONSTRUCTORA", "MAESTRANZA", "PLANTA", "NACIONAL", "CENTRAL", "GENERAL",
+    "PROYECTOS", "MONTAJES", "MANTENCION", "EQUIPOS", "REPUESTOS", "GRUPO",
+    "FACTURA", "CLIENTE", "CLIENTES", "DATOS", "TOTAL", "BANCO", "POWER",
+}
 
 
 wr = openpyxl.load_workbook(REAL, data_only=True)
@@ -129,10 +157,69 @@ coinc = tot_real & tot_demo
 print("\n  Totales de factura que coinciden con produccion: %d de %d  %s"
       % (len(coinc), len(tot_demo), "OK" if len(coinc) < 5 else "REVISAR"))
 
+# --- 5. barrido de los archivos de texto del repositorio
+# El demo puede estar impecable y el repositorio filtrar igual: una version
+# anterior de anonimizar_demo.py traia un diccionario de marcas reales, o sea
+# que el script encargado de ocultar los nombres los publicaba el mismo. Este
+# paso es el que atrapa esa clase de error.
+#
+# Se busca la razon social COMPLETA, no sus palabras por separado. Probamos lo
+# segundo y no es viable aqui: buena parte de la cartera son personas naturales
+# y varias razones sociales estan hechas de sustantivos corrientes, asi que
+# tokens como TRABAJOS, PUERTO, GROUP o el apellido del autor marcaban prosa y
+# codigo inocentes. Una compuerta con falsos positivos se termina ignorando.
+#
+# La marca suelta dentro de una frase la cubre el barrido celda por celda del
+# paso 1, que si es agresivo a proposito. Este paso cubre el caso que aquel no
+# puede ver: un nombre real escrito a mano en el codigo o en la documentacion.
+secretos_txt = set()
+for _n, _orig in nombres_reales:
+    _p = palabras(_orig).strip()
+    if len(_p) >= 4 and _p not in GENERICOS:
+        secretos_txt.add((_p, _orig))
+
+TEXTO = (".md", ".py", ".json", ".tmdl", ".pbip", ".pbir", ".txt",
+         ".gitignore", ".gitattributes")
+IGNORAR = {".git", "__pycache__", "data", "screenshots"}
+raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+print()
+revisados = hits_txt = 0
+for carpeta, subdirs, archivos in os.walk(raiz):
+    subdirs[:] = [d for d in subdirs if d not in IGNORAR]
+    for nombre in archivos:
+        if not nombre.endswith(TEXTO):
+            continue
+        ruta = os.path.join(carpeta, nombre)
+        rel = os.path.relpath(ruta, raiz)
+        try:
+            contenido = io.open(ruta, encoding="utf-8", errors="replace").read()
+        except OSError:
+            continue
+        revisados += 1
+        for li, linea in enumerate(contenido.splitlines(), start=1):
+            pl = palabras(linea)
+            nl = norm(linea)
+            for sec, orig in secretos_txt:
+                if " " + sec + " " in pl:
+                    print("  FUGA %s:%d  nombre '%s'" % (rel, li, orig))
+                    hits_txt += 1
+                    break
+            for rr, orig in ruts_reales:
+                if len(rr) >= 8 and rr in nl:
+                    print("  FUGA %s:%d  RUT '%s'" % (rel, li, orig))
+                    hits_txt += 1
+                    break
+print("  archivos de texto revisados: %d   nombres/RUTs reales: %d  %s"
+      % (revisados, hits_txt, "OK" if not hits_txt else "FUGA"))
+if hits_txt:
+    fallos.append("%d apariciones de datos reales en archivos de texto" % hits_txt)
+
 print("\n" + "=" * 62)
 if fallos:
     print("RESULTADO: %d PROBLEMAS" % len(fallos))
     for f in fallos:
         print("   -", f)
     sys.exit(1)
-print("RESULTADO: LIMPIO — ninguna hoja contiene datos reales")
+print("RESULTADO: LIMPIO — ni las hojas ni los archivos de texto")
+print("           del repositorio contienen datos reales")
