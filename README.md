@@ -4,11 +4,28 @@ Un dashboard ejecutivo en Power BI para una empresa chilena de servicios industr
 
 El reporte tiene tres páginas, con navegación real entre ellas desde el panel lateral: **Resumen** (foto ejecutiva del mes en curso), **Ventas** (análisis histórico y filtrable) y **Cobranzas** (comportamiento de pago en el tiempo).
 
-![Página Resumen](screenshots/resumen.png)
+![Página Ventas](screenshots/ventas.png)
 
 *(Todos los nombres, RUTs y montos son sintéticos — ver [Sobre los datos](#sobre-los-datos) más abajo.)*
 
-**Cómo está ordenado este documento:** primero qué es y con qué está hecho, después qué preguntas responde y cómo funciona cada página, luego los hallazgos y las acciones que se desprenden de ellos. Las explicaciones de *por qué* se tomó cada decisión quedan al final, para quien quiera entrar en detalle.
+---
+
+## 🧭 Cómo explorar el proyecto
+
+El documento va de qué es y cómo funciona, a los hallazgos, y cierra con el porqué de cada decisión. Si buscas algo puntual:
+
+| Si quieres revisar... | Empieza aquí |
+|---|---|
+| Los resultados del análisis | [Hallazgos principales](#hallazgos) y [Recomendaciones ejecutivas](#recomendaciones) |
+| El caso de negocio y a quién sirve | [`documentacion/definicion_proyecto.md`](documentacion/definicion_proyecto.md) |
+| Qué hay en los datos | [`documentacion/diccionario_datos.md`](documentacion/diccionario_datos.md) |
+| Las medidas DAX una por una | [`documentacion/diccionario_kpis.md`](documentacion/diccionario_kpis.md) |
+| El modelo y sus relaciones | [`documentacion/modelo_dimensional.md`](documentacion/modelo_dimensional.md) |
+| Los bugs de datos, en detalle | [`documentacion/calidad_datos.md`](documentacion/calidad_datos.md) |
+| Cómo se anonimizó el set | [`documentacion/anonimizacion.md`](documentacion/anonimizacion.md) |
+| El pipeline diario | [`scripts/sync_facturacion_a_base.py`](scripts/sync_facturacion_a_base.py) |
+| Reproducir los hallazgos tú mismo | [`scripts/hallazgos.py`](scripts/hallazgos.py) |
+| Las definiciones del reporte | `Dashboard Finanzas.Report/definition/` — texto plano, se leen en el navegador |
 
 ---
 
@@ -64,6 +81,10 @@ Resumen deliberadamente **no** es un subconjunto filtrado de las otras dos. Es u
 
 ### 📌 Resumen — la foto ejecutiva
 
+![Página Resumen](screenshots/resumen.png)
+
+*Captura tomada el 3 de septiembre. Los KPIs de esta página anclan al mes calendario en curso, así que con dos días de facturación aparecen vacíos — es el comportamiento correcto, no un error: la página muestra el mes que va corriendo, no una ventana móvil de 30 días. Los paneles de cobranza, que no dependen del calendario, sí tienen datos.*
+
 #### Los 4 KPIs principales
 
 | KPI | Pregunta de negocio | Por qué este y no otro |
@@ -86,7 +107,7 @@ Resumen deliberadamente **no** es un subconjunto filtrado de las otras dos. Es u
 
 ### 📈 Ventas — análisis histórico
 
-![Página Ventas](screenshots/ventas.png)
+Es la captura que abre este documento.
 
 Cuatro KPIs que **sí** responden a los slicers: Ventas Totales, Variación vs. Año Anterior, Ticket Promedio y Participación Top 3 Clientes. El gráfico principal ocupa el ancho completo y superpone el año actual contra el anterior; abajo, ranking de clientes y detalle de facturas.
 
@@ -310,23 +331,6 @@ Dos decisiones que vale la pena explicitar, porque son fáciles de hacer mal:
 Los montos están escalados por un factor único, de modo que las proporciones — y por tanto todos los porcentajes del dashboard — se conservan exactos.
 
 La anonimización es reproducible y **verificable**: `scripts/verificar_demo.py` recorre cada celda de cada hoja buscando cualquier nombre o RUT real, comprueba que las llaves no se solapen con producción y sale con código distinto de cero si encuentra algo. Se corre antes de cada publicación.
-
----
-
-## 🧭 Cómo explorar el proyecto
-
-| Si quieres revisar... | Empieza aquí |
-|---|---|
-| Los resultados del análisis | [Hallazgos principales](#hallazgos) y [Recomendaciones ejecutivas](#recomendaciones) |
-| El caso de negocio y a quién sirve | [`documentacion/definicion_proyecto.md`](documentacion/definicion_proyecto.md) |
-| Qué hay en los datos | [`documentacion/diccionario_datos.md`](documentacion/diccionario_datos.md) |
-| Las medidas DAX una por una | [`documentacion/diccionario_kpis.md`](documentacion/diccionario_kpis.md) |
-| El modelo y sus relaciones | [`documentacion/modelo_dimensional.md`](documentacion/modelo_dimensional.md) |
-| Los bugs de datos, en detalle | [`documentacion/calidad_datos.md`](documentacion/calidad_datos.md) |
-| Cómo se anonimizó el set | [`documentacion/anonimizacion.md`](documentacion/anonimizacion.md) |
-| El pipeline diario | [`scripts/sync_facturacion_a_base.py`](scripts/sync_facturacion_a_base.py) |
-| Reproducir los hallazgos tú mismo | [`scripts/hallazgos.py`](scripts/hallazgos.py) |
-| Las definiciones del reporte | `Dashboard Finanzas.Report/definition/` — texto plano, se leen en el navegador |
 
 ---
 
