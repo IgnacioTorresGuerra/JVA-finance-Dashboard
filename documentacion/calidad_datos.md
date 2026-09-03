@@ -96,8 +96,8 @@ Ocho facturas afectadas. Basta una para arruinar un promedio.
 
 | Año | DPD promedio con las corruptas | Sin ellas |
 |---|---:|---:|
-| 2022 | **−25.849 días** | **+4,3 días** |
-| 2023 | **−3.190 días** | **+0,9 días** |
+| 2022 | **−25.849 días** | **+3,9 días** |
+| 2023 | **−3.190 días** | **+0,6 días** |
 
 **Corrección.** Dos guardas en el pipeline, aplicadas tanto al comentario como a la fecha de la columna `Banco`:
 
